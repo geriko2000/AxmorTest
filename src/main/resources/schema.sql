@@ -9,7 +9,7 @@ create table if not exists Users
 create table if not exists Issues
 (
     id          int           not null auto_increment,
-    name        varchar(255)  not null,
+    name        varchar(30)  not null,
     author_id   int           not null,
     description varchar(1000) not null,
     start_date  datetime      not null,

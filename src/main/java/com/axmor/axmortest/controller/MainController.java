@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -54,8 +57,18 @@ public class MainController {
                                  @RequestParam(required = false, defaultValue = "") String error,
                                  Model model) {
         model.addAttribute("user", user);
-        if (error != null && error.equals("4")) {
-            model.addAttribute("errmsg", "Name or description must be filled!");
+        switch (error) {
+            case "4":
+                model.addAttribute("errmsg", "Name or description must be filled!");
+                break;
+            case "6":
+                model.addAttribute("errmsg", "Name length must be less than 30 symbols");
+                break;
+            case "7":
+                model.addAttribute("errmsg", "Description length must be less than 1000 symbols");
+                break;
+            default:
+                break;
         }
         return "createIssue";
     }
@@ -66,6 +79,16 @@ public class MainController {
                                         @RequestParam(defaultValue = "") String description) {
         ModelAndView modelAndView = new ModelAndView("redirect:/");
         if (!name.isEmpty() && !description.isEmpty()) {
+            if (name.length() > 30) {
+                modelAndView.addObject("error", "6");
+                modelAndView.setViewName("redirect:/createissue");
+                return modelAndView;
+            }
+            if (description.length() > 1000) {
+                modelAndView.addObject("error", "7");
+                modelAndView.setViewName("redirect:/createissue");
+                return modelAndView;
+            }
             issueService.createIssue(user, name, description);
         } else {
             modelAndView.addObject("error", "4");
@@ -105,6 +128,9 @@ public class MainController {
             case "3":
                 modelAndView.addObject("errmsg", "Comment text must be filled");
                 break;
+            case "8":
+                modelAndView.addObject("errmsg", "Comment text length must be less than 1000 symbols");
+                break;
             default:
                 break;
         }
@@ -124,6 +150,11 @@ public class MainController {
             if (issue != null) {
                 if (text == null || text.isEmpty()) {
                     modelAndView.addObject("error", "3");
+                    modelAndView.setViewName("redirect:/" + id);
+                    return modelAndView;
+                }
+                if (text.length() > 1000) {
+                    modelAndView.addObject("error", "8");
                     modelAndView.setViewName("redirect:/" + id);
                     return modelAndView;
                 }
