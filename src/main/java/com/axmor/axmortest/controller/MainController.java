@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
@@ -34,6 +35,7 @@ public class MainController {
 
     @GetMapping("/")
     public String getIssueTracker(@AuthenticationPrincipal User user,
+                                  @RequestParam(required = false, defaultValue = "") String filter,
                                   @RequestParam(required = false, defaultValue = "") String error,
                                   Model model) {
         switch (error) {
@@ -46,7 +48,12 @@ public class MainController {
             default:
                 break;
         }
-        List<Issue> issues = issueMapper.findAll();
+        List<Issue> issues;
+        if (!filter.isEmpty()) {
+            issues = issueMapper.findByName(filter);
+        } else {
+            issues = issueMapper.findAll();
+        }
         model.addAttribute("user", user);
         model.addAttribute("issues", issues);
         return "index";

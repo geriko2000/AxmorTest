@@ -23,6 +23,16 @@ public interface IssueMapper {
     })
     Issue findById(long id);
 
+    @Select("Select * from Issues where lower(name) like lower('%${name}%')")
+    @Results(value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "startDate", column = "start_date"),
+            @Result(property = "description", column = "description"),
+            @Result(property = "status", column = "status"),
+            @Result(property = "author", column = "author_id", one = @One(select = "com.axmor.axmortest.dao.UserMapper.findById"))
+    })
+    List<Issue> findByName(String name);
+
     @Insert("Insert into Issues (name, author_id, description, start_date, status) " +
             "values (#{name}, #{author.id}, #{description}, #{startDate}, #{status})")
     void insert(Issue issue);

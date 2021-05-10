@@ -29,6 +29,13 @@
             <div class="mt-3 mb-5 col-auto card">
                 <div class="p-3">
                     <h1>Issue tracker</h1>
+                    <form th:action="@{/}" method="get">
+                        <div class="form-group mt-2">
+                            <label for="FilterByName">Name</label>
+                            <input type="text" name="filter" class="form-control" id="FilterByName"/>
+                        </div>
+                        <input type="submit" value="Search" class="btn btn-primary btn-sm active mt-2"/>
+                    </form>
                     <div th:if="${not issues.isEmpty()}">
                         <ul th:each="issue : ${issues}" class="list-group mt-2">
                             <li class="list-group-item">
